@@ -1,0 +1,296 @@
+---
+title: "Comparing PHQ9 Scores"
+author: "Susan Wu"
+output:
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+  html_document:
+    fontsize: 13pt
+    font-family: Helvetica
+    mainfont: Arial
+    geometry: margin=1in
+    fonttheme: "structurebold"
+    code_download: yes
+    code_folding: hide
+    fig_width: 6
+    fig_height: 6
+    highlight: haddock
+    linkcolor: blue
+    number_sections: yes
+    theme: default
+    toc: yes
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+---
+<style type="text/css">
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 8px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "serif;
+  color: DarkBlue;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```{r chunk_name, results="hide"}
+x <- rnorm(100)
+y <- 2*x + rnorm(100)
+cor(x, y)
+```
+```{r}
+knitr::opts_chunk$set(echo = TRUE,
+message = FALSE,
+warning = FALSE) 
+```
+
+
+# Introduction
+Data visualization techniques and tools are used to gather and bridge together knowledge. The power of analysis engages and communicates crucial information and data to an audience. For each graph and figure below, data visualization software, such as such as R, Tableau, and QGIS, were used. The way information is creatively presented can provide insights and knowledge to the larger community. This portfolio was created using R Markdown to demonstrate data analysis of PHQ9 data. A non-profit organization in Northwest Detroit that serves children and adults in the community through various behavioral health programs provided the dataset. The organization strives to improve the life of those experiencing a mental health concern.This non-profit organization wishes to remain anonymous.
+
+## PHQ-9 
+For each program, the Patient Health Questionnaire (PHQ9) is used to assess the client. The PHQ-9 is a nine-item depression scale measuring depressive symptoms. As one of the most validated tools in mental health, it is used as a screening tool to diagnose depression and monitor treatment. The nine questions are based directly on the nine diagnostic criteria for major depressive disorder in the DSM-V. The higher the score, the more depressive symptoms are present.
+An overview of the The Patient Health Questionnaire (PHQ-9) can be viewed [here](http://www.drugsandalcohol.ie/26814/1/Patient%20Health%20Questionnaire.pdf).
+ 
+The chart below is taken from the non-profit organization and 
+the PHQ-9 severity scoring is as follows:
+![](/Users/suwu/Desktop/Picture for R markdown/8.png)
+
+
+# Client  Demographic
+Age, gender, and place of residency were the factors analyzed with the PHQ9 scores.The client population represents those who received services from September 1st, 2018 until October 31st, 2019. From the fiscal year 2019, there were a total of 3,413 clients. QGIS displays the client population residing in five different counties and fifty-five different cities. Using R software, the client demographics can be displayed through histograms and descriptive statistics. There was a higher count of females compared to males. 
+
+## Place of Residency
+Geographical mapping in QGIS presents the density of the client population residing in Michigan. On this platform the city and county are mapped to demonstrate where most clients are from. The map of the counties and cities are blue and the darker shade of blue represents a greater number of clients.  The majority of the clients reside in Detroit and are from the following counties: Livingston, Macomb, Monroe, Oakland, St. Clair, and Wayne.
+
+![](/Users/suwu/Desktop/Picture for R markdown/CPB2.png)
+![](/Users/suwu/Desktop/Picture for R markdown/00.png)
+
+
+## Gender 
+
+There was a total of 1,820 females and 1,593 males in the client population. 
+```{r}
+library(readxl)
+PHQ <- read_excel("~/Desktop/SpSu2020/1 r studio/PHQ.xls")
+mydata <- read_excel("~/Desktop/SpSu2020/1 r studio/PHQ.xls")
+
+library(ggplot2) # graphs
+
+library(dplyr) # data wrangling
+
+
+mydata %>%
+  filter(!is.na(Gender)) %>% # filter on non-missing values
+  ggplot(aes(x = Gender, # x is neighborhood
+             fill = Gender)) + # fill is neighborhood
+  geom_bar(width=.6)+
+  labs(title="Number Count by Gender (N=3413)",
+       subtitle="Higher Counts of Females than Males ",
+       x="Gender",
+       y="Number of People")
+```
+
+##  Age  
+The client's age range is from 11 years old to 96 years old. The average age of the client population is 42 years old.
+
+![](/Users/suwu/Desktop/Picture for R markdown/9.png)
+
+
+```{r}
+hist(PHQ$Age,main="Age of Clients",ylab="Number", xlab="Age",col="orange")
+```
+
+
+# Data Analysis: PHQ9 Scores
+
+## Histogram and Descriptive Statistics
+
+The scores range from 0-27. The average initial score was 9.0 and the average final score was 8.1. Decreasing scores represent improvement and less  depressive symptoms. 
+![](/Users/suwu/Desktop/Picture for R markdown/11.png)
+According to the histogram of both initial (yellow) and final (red) scores, most clients do not have any depressive symptoms. As the PHQ9 score increases, the count of clients decreases.
+```{r}
+hist(PHQ$First,breaks=12, col="yellow",main="Initial PHQ9 Score of Clients",ylab="Number of people", xlab="PHQ9 Score")
+hist(PHQ$Last,breaks=12, col="red",main="Final PHQ9 Score of Clients",ylab="Number of people", xlab="PHQ9 Score")
+```
+
+## Place of Residency 
+
+QGIS was used to display the average initial and final PHQ9 scores by client’s residency.  The PHQ9 scores on the map are categorized by depression severity: None, Mild, Moderate, Moderately Severe, and Severe. The map of the cities are in red and the darker the color, the higher the PHQ9 score is for that city. When comparing the two maps, the average final score map displays more cities in lighter shades of red. More cities in lighter shades of red means they have lower PHQ9 scores. Additionally, the third map displays the cities representing the increase (red) and decrease (green) in PHQ9 score. A decreased value indicates an improvement in symptoms of depression, whereas an increased value indicates worsening in symptoms of depression. Overall, the map is green which indicates the treatment has helped reduce depressive symptoms. 
+
+![](/Users/suwu/Desktop/Picture for R markdown/6.png)
+![](/Users/suwu/Desktop/Picture for R markdown/7.png)
+![](/Users/suwu/Desktop/Picture for R markdown/5.png)
+
+
+Bar Chart ( Initial and Final PHQ9 Score)
+```{r}
+CityIF <- read_excel("~/Desktop/SpSu2020/1 r studio/CityIF.xlsx")
+library(readxl) # import Excel
+library(ggplot2) # beautiful graphs
+library(tidyr) # tidy data
+library(dplyr) # wrangle data
+
+CityIF %>%  
+  # wrangle and tidy the data
+  select(City, First, Last) %>%  # select only certain vars.
+  group_by(City) %>%  
+  summarise(Initial = mean(First),  
+            Final = mean(Last)) %>%  
+  gather(key,  
+         value,  
+         2:3) %>%  
+  # graph the data
+  ggplot(aes(x = City,  
+             y = value,  
+             fill = key)) +  
+  geom_bar(stat = "identity",  
+           position = position_dodge()) +  # unstack
+  coord_flip() +  # flip to make it readable
+  theme(axis.text.y = element_text(size = rel(.5))) +  
+  labs(title = "Average PHQ9 Initial and Final Score by City",
+       x = "City",
+       y = "PHQ9 Score",
+       fill = "Key")
+```
+
+
+## Gender 
+When comparing gender with Tableau, females display a higher PHQ9 score for both average initial and final scores compared to males. PHQ9 scores for both genders decreased, which means less depressive synptoms are displayed amongst clients. For females, the average PHQ9 scores decreased from 10.2 to 9.3. The scores for males also decreased from 7.7 to 6.8. 
+
+![](/Users/suwu/Desktop/Picture for R markdown/2.png)
+
+
+## Age 
+To present visually appealing graphs, Tableau was used to compare average initial and final scores across age groups. The line graph shows average initial score (green) and average final score (blue) of clients from age 11 to 96. The initial and final scores tend to follow a similar trend with the scores increasing up to age 45 and then steadily decreasing with a spike up at age 77.
+
+![](/Users/suwu/Desktop/Picture for R markdown/1.png)
+
+# Bivariate Statistics
+## Correlation Analysis
+For the correlation test, three variables were analyzed: age, initial score, and final score. The correlation test was conducted to determine if there was an association between the three variables. Below are the correlation values from the test. There is no correlation between age and the final or initial scores. However, for initial and final sores, there was a correlation value of .69. A scatterplot is included demonstrating the position correlation.  
+
+  * Correlation Value: Initial Score and Age
+```{r,echo=FALSE}
+library(pander)
+pander(cor(PHQ$First, 
+    PHQ$Age,
+    use = "complete.obs"))
+```
+
+  * Correlation Value:Final Score and Age
+```{r,echo=FALSE}
+library(pander)
+pander(cor(PHQ$Age, 
+    PHQ$Last,
+    use = "complete.obs"))
+```
+
+
+  * Correlation Value:PHQ9 Initial and Final Score
+```{r,echo=FALSE}
+library(pander)
+pander(cor(PHQ$First, 
+    PHQ$Last,
+    use = "complete.obs"))
+```
+
+```{r}
+ggplot(PHQ,
+       aes(x=First, 
+           y=Last))+
+  geom_point(colour = "red", size = .3)+ 
+  geom_smooth(colour="black", size=1)+
+labs(title = "Scatterplot of PHQ9 Initial and Final Score(Correlation Value = .69)",
+     x = "PHQ9 Initial Score",
+                                          y = "PHQ9 Final Score")+
+  theme(axis.text.y = element_text(size = rel(.5)),
+        legend.position = "none")
+```
+
+
+
+
+## Two Sample t-test (Initial and Final PHQ9 Score)
+A two sample t-test was conducted to compare the initial and iinal PHQ9 scores as well as scores between genders. According to the p-value of the t-test,  there is a significant difference between the initial and final PHQ9 scores. There w
+
+```{r, echo=FALSE,eval=FALSE}
+pander(t.test(x, y = NULL, alternative = c("two.sided", "less", "greater"), mu = 0, 
+              paired = FALSE, var.equal = FALSE, conf.level = 0.95))
+```
+
+```{r,echo=FALSE}
+library(pander)
+pander(t.test(PHQ$First,PHQ$Last))
+pander(t.test(PHQ$First ~ PHQ$Gender))
+pander(t.test(PHQ$Last ~ PHQ$Gender))
+
+```
+
+
+## Anova Test ( City)
+An anova test was conducted to compare the PHQ9 scores between cities to see if there was a significant difference. According to the p-value, there is a significant different. A graph of the final PHQ9 scores by city is included. The graph shows the variation of PHQ9 scores for each city. 
+
+```{r,echo=FALSE}
+myanova <- aov(Last ~ City,data = PHQ) # data set
+  pander(summary(myanova))
+
+```
+
+
+### Final PHQ9 Score Variation by City
+```{r}
+library(ggplot2)
+library(ggridges)
+ggplot(PHQ, 
+       aes(x = Last,  
+           y = City,  
+           fill = City)) +
+  geom_density_ridges()+
+  labs(title = "Final PHQ9 Score Variation by City",x = "PHQ9 Score",
+       y = "City")+
+  theme(axis.text.y = element_text(size = rel(.5)),
+        legend.position = "none")
+
+```
+
+# Discussion
+
+A total of 1,820 females and 1,593 males provided data for the study. Both gender groups had PHQ9 values decrease which means lower signs of depression. According to the two sample t-test, there was a significant difference between the initial and final scores. Overall, throughout all the age groups, females have a higher PHQ9 score compared to males in both initial and final scores. According to Crawford et al. (2017), female patients were slightly more often than males to receive a depression diagnosis and a PHQ-9 administration. The results analyzed aligned with the study above. Rossom et al. (2017) reported that PHQ9 predicts risk for suicide attempts and deaths across age groups. Overall,  PHQ9 serves as an accurate measure to detect current depressive disorders and can address those at risk for suicide. Crawford et al. (2017) reported that income levels did not demonstrate any differences in PHQ9 levels. For future implications, education level, socioeconomic status, and racial background will be analyzed in addition to the client's gender, age, and place of residency to compare results to see if the data aligns with other studies. Furthermore, there were some limitations while analzying the data. Some clients were removed from data analysis because of missing information.  When analyzing data, the total number of clients for each age group were not the same which affected the average initial and final score.
+
+# Conclusion
+R software, Tableau, and QGIS demonstrate the power of data visualization programs to effectively display visually pleasing and informative images and maps of large datasets. These tools can turn data from daunting numerical tables into approachable and easily understandable information. Analyzing large data sets provides knowledge and insights and can support more effective delivery of healthcare services. Data visualization harnesses the potential to change policies and enhance patient care and public health.
+
+# Reference
+Crawford, Phillip, Simon, Greg, Lynch, Frances, & Clarke, Greg. (10/8/2017). Differences in Adult PHQ9 Administration at KP Northwest by Demographic and Census Factors. Journal of Patient-Centered Research and Reviews, 4(3), 189–190. Aurora Health Care, Inc.
+ 
+Rossom, Rebecca C, Coleman, Karen J, Ahmedani, Brian K, Beck, Arne, Johnson, Eric, Oliver, Malia, & Simon, Greg E. (2017). Suicidal Ideation Reported on the PHQ9 and Risk of Suicidal Behavior across Age Groups. Journal of Affective Disorders, 215, 77–84. Journal Article, Netherlands: Elsevier B.V.
+
+Workgroup S.N.C.C.R.T. Workgroup STABLE resource toolkit
+(2007) (Available online) Google Scholar
+
+
+
